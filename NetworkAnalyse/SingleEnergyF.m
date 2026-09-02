@@ -1,0 +1,43 @@
+function Hmean = SingleEnergyF(f)
+a = 0.3;
+b = 1.0;
+c = 0.1;
+apha = 0.1;
+beta = 0.77;
+k1 = 1.0;
+k2 = 1.8;
+u0 = 0;
+A = 0.828;
+h = 0.01;
+m = 400000;
+x = 0.2;
+y = 0.1;
+z = 0.05;
+Hsum = 0;
+count = 0;
+t = 0;
+for i = 1:m
+    Iext = u0+A*cos(2*pi*f*t);
+    k11 = -(apha+beta*z^2)*(x-Iext)-y+x-x^3/3;
+    k21 = c*(x+a-b*y);
+    k31 = -k1*(x-Iext)-k2*z;
+    k12 = -(apha+beta*(z+0.5*h*k31)^2)*((x+0.5*h*k11)-Iext)-(y+0.5*h*k21)+(x+0.5*h*k11)-(x+0.5*h*k11)^3/3;
+    k22 = c*((x+0.5*h*k11)+a-b*(y+0.5*h*k21));
+    k32 = -k1*((x+0.5*h*k11)-Iext)-k2*(z+0.5*h*k31);
+    k13 = -(apha+beta*(z+0.5*h*k32)^2)*((x+0.5*h*k12)-Iext)-(y+0.5*h*k22)+(x+0.5*h*k12)-(x+0.5*h*k12)^3/3;
+    k23 = c*((x+0.5*h*k12)+a-b*(y+0.5*h*k22));
+    k33 = -k1*((x+0.5*h*k12)-Iext)-k2*(z+0.5*h*k32);
+    k14 = -(apha+beta*(z+h*k33)^2)*((x+h*k13)-Iext)-(y+h*k23)+(x+h*k13)-(x+h*k13)^3/3;
+    k24 = c*((x+h*k13)+a-b*(y+h*k23));
+    k34 = -k1*((x+h*k13)-Iext)-k2*(z+h*k33);
+    x = x+h*(k11+2*k12+2*k13+k14)/6;
+    y = y+h*(k21+2*k22+2*k23+k24)/6;
+    z = z+h*(k31+2*k32+2*k33+k34)/6;
+    if i >= 50000
+        Hsum = Hsum + 0.5*x^2 + 0.5/c*y^2 + 0.5*(apha*z+beta*z^3)*(Iext-x);
+        count = count+1;
+    end
+    t = t+h;
+end
+Hmean = Hsum/count;
+end
