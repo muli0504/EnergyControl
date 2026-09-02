@@ -202,7 +202,7 @@ end
 
 function S = runTsim(params0,x0Cell,Gc,rho,gcCompare)
 
-values = [1500 2000 2300];
+values = [1500 2000];
 numC = numel(values);
 numG = numel(Gc);
 numR = numel(x0Cell);
